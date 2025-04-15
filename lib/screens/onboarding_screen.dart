@@ -25,6 +25,113 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       setState(() => _imageFile = File(picked.path));
     }
   }
+  String heightUnit = 'cm';
+  int selectedCm = 160;
+  int selectedFeet = 5;
+  int selectedInch = 4;
+
+  void showHeightPicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return SizedBox(
+              height: 300,
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ChoiceChip(
+                        label: const Text("cm"),
+                        selected: heightUnit == 'cm',
+                        selectedColor: Colors.purple,
+                        onSelected: (_) => setModalState(() {
+                          heightUnit = 'cm';
+                        }),
+                        labelStyle: TextStyle(
+                          color: heightUnit == 'cm' ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ChoiceChip(
+                        label: const Text("feet"),
+                        selected: heightUnit == 'feet',
+                        selectedColor: Colors.purple,
+                        onSelected: (_) => setModalState(() {
+                          heightUnit = 'feet';
+                        }),
+                        labelStyle: TextStyle(
+                          color: heightUnit == 'feet' ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: heightUnit == 'cm'
+                          ? [
+                        CupertinoPicker(
+                          itemExtent: 40,
+                          scrollController: FixedExtentScrollController(
+                              initialItem: selectedCm - 100),
+                          onSelectedItemChanged: (index) {
+                            setModalState(() => selectedCm = 100 + index);
+                          },
+                          children: List.generate(
+                            101,
+                                (index) => Text('${100 + index} cm'),
+                          ),
+                        ),
+                      ]
+                          : [
+                        CupertinoPicker(
+                          itemExtent: 40,
+                          scrollController: FixedExtentScrollController(
+                              initialItem: selectedFeet - 4),
+                          onSelectedItemChanged: (index) {
+                            setModalState(() => selectedFeet = 4 + index);
+                          },
+                          children: List.generate(
+                            4,
+                                (index) => Text('${4 + index}\''),
+                          ),
+                        ),
+                        CupertinoPicker(
+                          itemExtent: 40,
+                          scrollController: FixedExtentScrollController(
+                              initialItem: selectedInch),
+                          onSelectedItemChanged: (index) {
+                            setModalState(() => selectedInch = index);
+                          },
+                          children: List.generate(
+                            12,
+                                (index) => Text('$index"'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      setState(() {});
+                    },
+                    child: const Text("Done"),
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
 
   void showDatePickerWheel() {
     showModalBottomSheet(
@@ -41,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
                   initialDateTime: tempDate,
-                  minimumYear: 1950,
+                  minimumYear: 1970,
                   maximumYear: 2025,
                   onDateTimeChanged: (date) {
                     setState(() => selectedDOB = date);
@@ -61,19 +168,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       builder: (_) {
         List<int> tempDates = List.from(selectedCycleDates);
         return AlertDialog(
-          title: const Text("Select 3 Cycle Dates"),
+          title: const Text("Select your Cycle Dates"),
           content: Wrap(
             children: List.generate(
               31,
                   (index) {
-                int day = index + 1;
+                int day = index + 0;
                 bool selected = tempDates.contains(day);
                 return InkWell(
                   onTap: () {
                     setState(() {
                       if (selected) {
                         tempDates.remove(day);
-                      } else if (tempDates.length < 3) {
+                      } else if (tempDates.length < 2) {
                         tempDates.add(day);
                       }
                     });
@@ -165,7 +272,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ],
             ),
+            //// Height place picker start
             const SizedBox(height: 20),
+
+            InkWell(
+              onTap: showHeightPicker, // 👈 Make sure this is wired
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                decoration: _boxDecoration(),
+                child: Row(
+                  children: [
+                    const Icon(Icons.height, color: Colors.purple),
+                    const SizedBox(width: 12),
+                    Text(
+                      heightUnit == 'cm'
+                          ? 'Height: $selectedCm cm'
+                          : "Height: $selectedFeet' $selectedInch\"",
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            )
+,
+
+            /// height picker end
+            const SizedBox(height:20),
 
             // Date of Birth
             InkWell(
@@ -179,9 +311,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(width: 12),
                     Text(
                       selectedDOB == null
-                          ? "Select Date of Birth"
+                          ? "Select your Date of Birth"
                           : "${selectedDOB!.day}-${selectedDOB!.month}-${selectedDOB!.year}",
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 15),
                     ),
                   ],
                 ),
@@ -201,8 +333,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(width: 12),
                     Text(
                       selectedCycleDates.isEmpty
-                          ? "Select 3 Cycle Dates"
-                          : "Selected: ${selectedCycleDates.join(', ')}",
+                          ? "Select your Cycle Date"
+                          : "Cycle Date: ${selectedCycleDates.join(', ')}",
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],
