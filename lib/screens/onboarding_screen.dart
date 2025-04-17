@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'homescreen.dart';
+import 'summary.dart';
 
 import 'dart:io';
 
@@ -500,11 +501,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               decoration:
                   _inputDecoration("Any Medical Conditions?", Icons.healing),
             ),
+            const SizedBox(height: 24),
+
+            const SizedBox(height: 30),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text("Complete"),
+            ),
           ],
         ),
       ),
     );
-    const SizedBox(height: 24);
+    const SizedBox(height: 20);
 
     ElevatedButton(
       onPressed: () {
