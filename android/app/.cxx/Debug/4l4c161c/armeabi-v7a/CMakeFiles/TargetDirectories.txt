@@ -1,0 +1,2 @@
+C:/abhay/update/Electro_Relief/android/app/.cxx/Debug/4l4c161c/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/abhay/update/Electro_Relief/android/app/.cxx/Debug/4l4c161c/armeabi-v7a/CMakeFiles/rebuild_cache.dir

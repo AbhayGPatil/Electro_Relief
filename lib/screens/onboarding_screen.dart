@@ -25,101 +25,244 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       setState(() => _imageFile = File(picked.path));
     }
   }
+
   String heightUnit = 'cm';
   int selectedCm = 160;
   int selectedFeet = 5;
   int selectedInch = 4;
+  // void showHeightPicker() {
+  //   print("heightpicker called");
+  //   print("%%%%%%%%%");
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true, // ✅ Helps for full height on small screens
+  //     backgroundColor: Colors.white,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     builder: (_) {
+  //       String tempUnit = heightUnit;
+  //       int tempCm = selectedCm;
+  //       int tempFeet = selectedFeet;
+  //       int tempInch = selectedInch;
 
+  //       return StatefulBuilder(
+  //         builder: (context, setModalState) {
+  //           return SizedBox(
+  //             height: 350,
+  //             child: Column(
+  //               children: [
+  //                 const SizedBox(height: 12),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     ChoiceChip(
+  //                       label: const Text("cm"),
+  //                       selected: tempUnit == 'cm',
+  //                       selectedColor: Colors.purple,
+  //                       onSelected: (_) => setModalState(() => tempUnit = 'cm'),
+  //                       labelStyle: TextStyle(
+  //                         color: tempUnit == 'cm' ? Colors.white : Colors.black,
+  //                       ),
+  //                     ),
+  //                     const SizedBox(width: 12),
+  //                     ChoiceChip(
+  //                       label: const Text("feet"),
+  //                       selected: tempUnit == 'feet',
+  //                       selectedColor: Colors.purple,
+  //                       onSelected: (_) =>
+  //                           setModalState(() => tempUnit = 'feet'),
+  //                       labelStyle: TextStyle(
+  //                         color:
+  //                             tempUnit == 'feet' ? Colors.white : Colors.black,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 const SizedBox(height: 20),
+  //                 SizedBox(
+  //                   height: 180,
+  //                   child: Row(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: tempUnit == 'cm'
+  //                         ? [
+  //                             CupertinoPicker(
+  //                               itemExtent: 40,
+  //                               scrollController: FixedExtentScrollController(
+  //                                   // initialItem: tempCm - 100),
+  //                                   initialItem: tempCm - 100),
+  //                               onSelectedItemChanged: (index) {
+  //                                 setModalState(() => tempCm = 100 + index);
+  //                               },
+  //                               children: List.generate(
+  //                                 101,
+  //                                 (index) => Text('${100 + index} cm'),
+  //                               ),
+  //                             ),
+  //                           ]
+  //                         : [
+  //                             CupertinoPicker(
+  //                               itemExtent: 40,
+  //                               scrollController: FixedExtentScrollController(
+  //                                   initialItem: tempFeet - 4),
+  //                               onSelectedItemChanged: (index) {
+  //                                 setModalState(() => tempFeet = 4 + index);
+  //                               },
+  //                               children: List.generate(
+  //                                 4,
+  //                                 (index) => Text('${4 + index}\''),
+  //                               ),
+  //                             ),
+  //                             CupertinoPicker(
+  //                               itemExtent: 40,
+  //                               scrollController: FixedExtentScrollController(
+  //                                   initialItem: tempInch),
+  //                               onSelectedItemChanged: (index) {
+  //                                 setModalState(() => tempInch = index);
+  //                               },
+  //                               children: List.generate(
+  //                                 12,
+  //                                 (index) => Text('$index"'),
+  //                               ),
+  //                             ),
+  //                           ],
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 12),
+  //                 ElevatedButton(
+  //                   onPressed: () {
+  //                     setState(() {
+  //                       heightUnit = tempUnit;
+  //                       selectedCm = tempCm;
+  //                       selectedFeet = tempFeet;
+  //                       selectedInch = tempInch;
+  //                     });
+  //                     Navigator.pop(context);
+  //                   },
+  //                   child: const Text("Done"),
+  //                 )
+  //               ],
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
   void showHeightPicker() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (_) {
+        String tempUnit = heightUnit;
+        int tempCm = selectedCm;
+        int tempFeet = selectedFeet;
+        int tempInch = selectedInch;
+
         return StatefulBuilder(
           builder: (context, setModalState) {
             return SizedBox(
-              height: 300,
+              height: 350,
               child: Column(
                 children: [
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ChoiceChip(
                         label: const Text("cm"),
-                        selected: heightUnit == 'cm',
+                        selected: tempUnit == 'cm',
                         selectedColor: Colors.purple,
-                        onSelected: (_) => setModalState(() {
-                          heightUnit = 'cm';
-                        }),
+                        onSelected: (_) => setModalState(() => tempUnit = 'cm'),
                         labelStyle: TextStyle(
-                          color: heightUnit == 'cm' ? Colors.white : Colors.black,
+                          color: tempUnit == 'cm' ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(width: 12),
                       ChoiceChip(
                         label: const Text("feet"),
-                        selected: heightUnit == 'feet',
+                        selected: tempUnit == 'feet',
                         selectedColor: Colors.purple,
-                        onSelected: (_) => setModalState(() {
-                          heightUnit = 'feet';
-                        }),
+                        onSelected: (_) =>
+                            setModalState(() => tempUnit = 'feet'),
                         labelStyle: TextStyle(
-                          color: heightUnit == 'feet' ? Colors.white : Colors.black,
+                          color:
+                              tempUnit == 'feet' ? Colors.white : Colors.black,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  Expanded(
+                  SizedBox(
+                    height: 180,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: heightUnit == 'cm'
+                      children: tempUnit == 'cm'
                           ? [
-                        CupertinoPicker(
-                          itemExtent: 40,
-                          scrollController: FixedExtentScrollController(
-                              initialItem: selectedCm - 100),
-                          onSelectedItemChanged: (index) {
-                            setModalState(() => selectedCm = 100 + index);
-                          },
-                          children: List.generate(
-                            101,
-                                (index) => Text('${100 + index} cm'),
-                          ),
-                        ),
-                      ]
+                              Flexible(
+                                child: CupertinoPicker(
+                                  itemExtent: 40,
+                                  scrollController: FixedExtentScrollController(
+                                    initialItem: tempCm - 100,
+                                  ),
+                                  onSelectedItemChanged: (index) {
+                                    setModalState(() => tempCm = 100 + index);
+                                  },
+                                  children: List.generate(
+                                    101,
+                                    (index) => Text('${100 + index} cm'),
+                                  ),
+                                ),
+                              ),
+                            ]
                           : [
-                        CupertinoPicker(
-                          itemExtent: 40,
-                          scrollController: FixedExtentScrollController(
-                              initialItem: selectedFeet - 4),
-                          onSelectedItemChanged: (index) {
-                            setModalState(() => selectedFeet = 4 + index);
-                          },
-                          children: List.generate(
-                            4,
-                                (index) => Text('${4 + index}\''),
-                          ),
-                        ),
-                        CupertinoPicker(
-                          itemExtent: 40,
-                          scrollController: FixedExtentScrollController(
-                              initialItem: selectedInch),
-                          onSelectedItemChanged: (index) {
-                            setModalState(() => selectedInch = index);
-                          },
-                          children: List.generate(
-                            12,
-                                (index) => Text('$index"'),
-                          ),
-                        ),
-                      ],
+                              Flexible(
+                                child: CupertinoPicker(
+                                  itemExtent: 40,
+                                  scrollController: FixedExtentScrollController(
+                                    initialItem: tempFeet - 4,
+                                  ),
+                                  onSelectedItemChanged: (index) {
+                                    setModalState(() => tempFeet = 4 + index);
+                                  },
+                                  children: List.generate(
+                                    4,
+                                    (index) => Text('${4 + index}\''),
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: CupertinoPicker(
+                                  itemExtent: 40,
+                                  scrollController: FixedExtentScrollController(
+                                    initialItem: tempInch,
+                                  ),
+                                  onSelectedItemChanged: (index) {
+                                    setModalState(() => tempInch = index);
+                                  },
+                                  children: List.generate(
+                                    12,
+                                    (index) => Text('$index"'),
+                                  ),
+                                ),
+                              ),
+                            ],
                     ),
                   ),
+                  const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
+                      setState(() {
+                        heightUnit = tempUnit;
+                        selectedCm = tempCm;
+                        selectedFeet = tempFeet;
+                        selectedInch = tempInch;
+                      });
                       Navigator.pop(context);
-                      setState(() {});
                     },
                     child: const Text("Done"),
                   )
@@ -132,7 +275,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-
   void showDatePickerWheel() {
     showModalBottomSheet(
       context: context,
@@ -143,7 +285,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-              const Text("Select Date of Birth", style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text("Select Date of Birth",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               Expanded(
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
@@ -172,7 +315,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           content: Wrap(
             children: List.generate(
               31,
-                  (index) {
+              (index) {
                 int day = index + 0;
                 bool selected = tempDates.contains(day);
                 return InkWell(
@@ -234,9 +377,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
+                    backgroundImage:
+                        _imageFile != null ? FileImage(_imageFile!) : null,
                     backgroundColor: Colors.purple.shade100,
-                    child: _imageFile == null ? const Icon(Icons.person, size: 50) : null,
+                    child: _imageFile == null
+                        ? const Icon(Icons.person, size: 50)
+                        : null,
                   ),
                   Positioned(
                     bottom: 0,
@@ -267,7 +413,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Expanded(
                   child: TextField(
                     controller: lastNameController,
-                    decoration: _inputDecoration("Last Name", Icons.person_outline),
+                    decoration:
+                        _inputDecoration("Last Name", Icons.person_outline),
                   ),
                 ),
               ],
@@ -278,7 +425,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             InkWell(
               onTap: showHeightPicker, // 👈 Make sure this is wired
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                 decoration: _boxDecoration(),
                 child: Row(
                   children: [
@@ -293,17 +441,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ],
                 ),
               ),
-            )
-,
+            ),
 
             /// height picker end
-            const SizedBox(height:20),
+            const SizedBox(height: 20),
 
             // Date of Birth
             InkWell(
               onTap: showDatePickerWheel,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                 decoration: _boxDecoration(),
                 child: Row(
                   children: [
@@ -325,7 +473,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             InkWell(
               onTap: showCycleDateSelector,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                 decoration: _boxDecoration(),
                 child: Row(
                   children: [
@@ -347,7 +496,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             TextField(
               controller: medicalController,
               maxLines: 3,
-              decoration: _inputDecoration("Any Medical Conditions?", Icons.healing),
+              decoration:
+                  _inputDecoration("Any Medical Conditions?", Icons.healing),
             ),
           ],
         ),
