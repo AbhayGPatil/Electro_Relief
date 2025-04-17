@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'homescreen.dart';
 
 import 'dart:io';
 
@@ -502,6 +503,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ],
         ),
       ),
+    );
+    const SizedBox(height: 24);
+
+    ElevatedButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.purple,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+      ),
+      child: const Text("Complete"),
     );
   }
 
