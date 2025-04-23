@@ -3,7 +3,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'homescreen.dart';
 import 'summary.dart';
-
 import 'dart:io';
 
 class OnboardingScreen extends StatefulWidget {
@@ -17,6 +16,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   File? _imageFile;
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
+  final weightController = TextEditingController();
   DateTime? selectedDOB;
   List<int> selectedCycleDates = [];
   final medicalController = TextEditingController();
@@ -32,125 +32,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int selectedCm = 160;
   int selectedFeet = 5;
   int selectedInch = 4;
-  // void showHeightPicker() {
-  //   print("heightpicker called");
-  //   print("%%%%%%%%%");
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true, // ✅ Helps for full height on small screens
-  //     backgroundColor: Colors.white,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-  //     ),
-  //     builder: (_) {
-  //       String tempUnit = heightUnit;
-  //       int tempCm = selectedCm;
-  //       int tempFeet = selectedFeet;
-  //       int tempInch = selectedInch;
 
-  //       return StatefulBuilder(
-  //         builder: (context, setModalState) {
-  //           return SizedBox(
-  //             height: 350,
-  //             child: Column(
-  //               children: [
-  //                 const SizedBox(height: 12),
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.center,
-  //                   children: [
-  //                     ChoiceChip(
-  //                       label: const Text("cm"),
-  //                       selected: tempUnit == 'cm',
-  //                       selectedColor: Colors.purple,
-  //                       onSelected: (_) => setModalState(() => tempUnit = 'cm'),
-  //                       labelStyle: TextStyle(
-  //                         color: tempUnit == 'cm' ? Colors.white : Colors.black,
-  //                       ),
-  //                     ),
-  //                     const SizedBox(width: 12),
-  //                     ChoiceChip(
-  //                       label: const Text("feet"),
-  //                       selected: tempUnit == 'feet',
-  //                       selectedColor: Colors.purple,
-  //                       onSelected: (_) =>
-  //                           setModalState(() => tempUnit = 'feet'),
-  //                       labelStyle: TextStyle(
-  //                         color:
-  //                             tempUnit == 'feet' ? Colors.white : Colors.black,
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 const SizedBox(height: 20),
-  //                 SizedBox(
-  //                   height: 180,
-  //                   child: Row(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     children: tempUnit == 'cm'
-  //                         ? [
-  //                             CupertinoPicker(
-  //                               itemExtent: 40,
-  //                               scrollController: FixedExtentScrollController(
-  //                                   // initialItem: tempCm - 100),
-  //                                   initialItem: tempCm - 100),
-  //                               onSelectedItemChanged: (index) {
-  //                                 setModalState(() => tempCm = 100 + index);
-  //                               },
-  //                               children: List.generate(
-  //                                 101,
-  //                                 (index) => Text('${100 + index} cm'),
-  //                               ),
-  //                             ),
-  //                           ]
-  //                         : [
-  //                             CupertinoPicker(
-  //                               itemExtent: 40,
-  //                               scrollController: FixedExtentScrollController(
-  //                                   initialItem: tempFeet - 4),
-  //                               onSelectedItemChanged: (index) {
-  //                                 setModalState(() => tempFeet = 4 + index);
-  //                               },
-  //                               children: List.generate(
-  //                                 4,
-  //                                 (index) => Text('${4 + index}\''),
-  //                               ),
-  //                             ),
-  //                             CupertinoPicker(
-  //                               itemExtent: 40,
-  //                               scrollController: FixedExtentScrollController(
-  //                                   initialItem: tempInch),
-  //                               onSelectedItemChanged: (index) {
-  //                                 setModalState(() => tempInch = index);
-  //                               },
-  //                               children: List.generate(
-  //                                 12,
-  //                                 (index) => Text('$index"'),
-  //                               ),
-  //                             ),
-  //                           ],
-  //                   ),
-  //                 ),
-  //                 const SizedBox(height: 12),
-  //                 ElevatedButton(
-  //                   onPressed: () {
-  //                     setState(() {
-  //                       heightUnit = tempUnit;
-  //                       selectedCm = tempCm;
-  //                       selectedFeet = tempFeet;
-  //                       selectedInch = tempInch;
-  //                     });
-  //                     Navigator.pop(context);
-  //                   },
-  //                   child: const Text("Done"),
-  //                 )
-  //               ],
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
   void showHeightPicker() {
     showModalBottomSheet(
       context: context,
@@ -311,52 +193,63 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     showDialog(
       context: context,
       builder: (_) {
-        List<int> tempDates = List.from(selectedCycleDates);
-        return AlertDialog(
-          title: const Text("Select your Cycle Dates"),
-          content: Wrap(
-            children: List.generate(
-              31,
-              (index) {
-                int day = index + 0;
-                bool selected = tempDates.contains(day);
-                return InkWell(
-                  onTap: () {
-                    setState(() {
-                      if (selected) {
-                        tempDates.remove(day);
-                      } else if (tempDates.length < 2) {
-                        tempDates.add(day);
-                      }
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.all(4),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: selected ? Colors.purple : Colors.grey.shade200,
-                    ),
-                    child: Text(
-                      '$day',
-                      style: TextStyle(
-                        color: selected ? Colors.white : Colors.black,
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              title: const Text("Select your Cycle Dates (Max 10)"),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: GridView.count(
+                  crossAxisCount: 7,
+                  shrinkWrap: true,
+                  children: List.generate(31, (index) {
+                    int day = index + 1;
+                    bool selected = selectedCycleDates.contains(day);
+                    return InkWell(
+                      onTap: () {
+                        setModalState(() {
+                          setState(() {
+                            if (selected) {
+                              selectedCycleDates.remove(day);
+                            } else if (selectedCycleDates.length < 10) {
+                              selectedCycleDates.add(day);
+                            }
+                          });
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: selected
+                              ? Colors.deepPurple
+                              : Colors.grey.shade200,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '$day',
+                            style: TextStyle(
+                              color: selected ? Colors.white : Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() => selectedCycleDates = tempDates);
-                Navigator.pop(context);
-              },
-              child: const Text("Done"),
-            ),
-          ],
+                    );
+                  }),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Done"),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -421,11 +314,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ],
             ),
-            //// Height place picker start
+
+            const SizedBox(height: 20),
+
+            // Weight input
+            TextField(
+              controller: weightController,
+              keyboardType: TextInputType.number,
+              maxLength: 3,
+              decoration: _inputDecoration("Weight (kg)", Icons.monitor_weight),
+            ),
+
             const SizedBox(height: 20),
 
             InkWell(
-              onTap: showHeightPicker, // 👈 Make sure this is wired
+              onTap: showHeightPicker,
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -445,10 +348,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
 
-            /// height picker end
             const SizedBox(height: 20),
 
-            // Date of Birth
             InkWell(
               onTap: showDatePickerWheel,
               child: Container(
@@ -469,9 +370,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
 
-            // Cycle Dates
             InkWell(
               onTap: showCycleDateSelector,
               child: Container(
@@ -485,23 +386,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     Text(
                       selectedCycleDates.isEmpty
                           ? "Select your Cycle Date"
-                          : "Cycle Date: ${selectedCycleDates.join(', ')}",
+                          : "Cycle Dates: ${selectedCycleDates.join(', ')}",
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
 
-            // Medical Condition
             TextField(
               controller: medicalController,
               maxLines: 3,
               decoration:
                   _inputDecoration("Any Medical Conditions?", Icons.healing),
             ),
-            const SizedBox(height: 24),
 
             const SizedBox(height: 30),
 
@@ -527,25 +427,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
       ),
     );
-    const SizedBox(height: 20);
-
-    ElevatedButton(
-      onPressed: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.purple,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-      ),
-      child: const Text("Complete"),
-    );
   }
 
   InputDecoration _inputDecoration(String hint, IconData icon) {
@@ -554,6 +435,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       hintText: hint,
       fillColor: Colors.white,
       filled: true,
+      counterText: "",
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: Colors.purple),

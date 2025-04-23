@@ -1,0 +1,2 @@
+C:/FLUTTER/Electro/dev1/Electro_Relief/android/app/.cxx/Debug/63z1o5b3/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/FLUTTER/Electro/dev1/Electro_Relief/android/app/.cxx/Debug/63z1o5b3/armeabi-v7a/CMakeFiles/rebuild_cache.dir

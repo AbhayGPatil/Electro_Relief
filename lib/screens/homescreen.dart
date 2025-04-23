@@ -1,6 +1,8 @@
-import 'package:er/screens/qr_scan_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'summary.dart'; // Import the SummaryScreen
+import 'qr_scan_screen.dart'; // Import QrScanScreen
+import 'timerscreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,20 +11,51 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   bool isDeviceOn = false;
   String pairingStatus = 'Disconnected';
   double intensity = 1;
-
   int _currentImageIndex = 0;
   final List<String> _images = [
     'assets/pain.jpg',
     'assets/color_1.jpg', // Replace with other images later
   ];
 
+  late final AnimationController _animationController;
+  late final Animation<Offset> _slideAnimation;
+
+  // To navigate to different screens
+  int _selectedIndex = 0;
+
+  // List of screens
+  final List<Widget> _screens = [
+    const HomeScreen(), // Home screen (you can customize this widget as needed)
+    const QrScanScreen(), // Pair screen
+    const SummaryScreen(), // Stats screen
+  ];
+
   @override
   void initState() {
     super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 1.0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    _animationController.forward();
+
     Timer.periodic(const Duration(seconds: 3), (timer) {
       if (mounted) {
         setState(() {
@@ -33,240 +66,283 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  // Function to handle BottomNavigationBar tab change
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF833AB4), // Purple background
+      backgroundColor: const Color(0xFFF7F3FA),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 🔹 Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    'Hi , Aenessa',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, color: Colors.deepPurple),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // 🔹 Label
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.purple.shade300,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'Your Electro Relief',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // 🔁 Animated Image
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                transitionBuilder: (child, animation) =>
-                    FadeTransition(opacity: animation, child: child),
-                child: ClipRRect(
-                  key: ValueKey<String>(_images[_currentImageIndex]),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    _images[_currentImageIndex],
-                    fit: BoxFit.cover,
-                    height: 180,
-                    width: double.infinity,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // 🔹 Pair Device Card
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'PAIR YOUR DEVICE',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Switch(
-                            value: isDeviceOn,
-                            activeColor: Colors.deepPurple,
-                            onChanged: (value) {
-                              setState(() {
-                                isDeviceOn = value;
-                                pairingStatus = 'Pairing...';
-                              });
-                              if (value) {
-                                Future.delayed(const Duration(seconds: 2), () {
-                                  setState(() {
-                                    pairingStatus = 'Device Paired';
-                                  });
-                                });
-                              } else {
-                                pairingStatus = 'Disconnected';
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Center(
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.purple.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            pairingStatus,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: pairingStatus == 'Device Paired'
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // 🚫 Can't connect button
-                      Center(
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const QrScanScreen()),
-                            );
-                          },
-                          child: const Text(
-                            "Couldn't connect?",
-                            style: TextStyle(
-                              color: Colors.deepPurple,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // 🔹 Quick Control Card
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Quick Control',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          Icon(Icons.flash_on, size: 40, color: Colors.yellow),
-                          Icon(Icons.local_fire_department,
-                              size: 40, color: Colors.red),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Intensity',
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      Slider(
-                        value: intensity,
-                        min: 1,
-                        max: 3,
-                        divisions: 2,
-                        activeColor: Colors.deepPurple,
-                        inactiveColor: Colors.deepPurple.shade100,
-                        onChanged: (value) {
-                          setState(() {
-                            intensity = value;
-                          });
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text('Low'),
-                            Text('Medium'),
-                            Text('High'),
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text("Welcome Back 👋",
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.grey)),
+                                SizedBox(height: 4),
+                                Text("Aenessa",
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold))
+                              ],
+                            ),
+                            const CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.deepPurple,
+                              child: Icon(Icons.person, color: Colors.white),
+                            )
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                        const SizedBox(height: 24),
+
+                        // Animated Carousel
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 600),
+                            transitionBuilder: (child, animation) =>
+                                FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                            child: Image.asset(
+                              _images[_currentImageIndex],
+                              key:
+                                  ValueKey<String>(_images[_currentImageIndex]),
+                              fit: BoxFit.cover,
+                              height: 180,
+                              width: double.infinity,
                             ),
                           ),
-                          child: const Text("Start Session"),
                         ),
-                      ),
-                    ],
+
+                        const SizedBox(height: 30),
+
+                        // Device Pairing
+                        SlideTransition(
+                          position: _slideAnimation,
+                          child: Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: const [
+                                          Icon(Icons.bluetooth,
+                                              color: Colors.deepPurple),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            'PAIR YOUR DEVICE',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
+                                      Switch(
+                                        value: isDeviceOn,
+                                        activeColor: Colors.deepPurple,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            isDeviceOn = value;
+                                            pairingStatus = 'Pairing...';
+                                          });
+                                          if (value) {
+                                            Future.delayed(
+                                                const Duration(seconds: 2), () {
+                                              setState(() {
+                                                pairingStatus = 'Device Paired';
+                                              });
+                                            });
+                                          } else {
+                                            pairingStatus = 'Disconnected';
+                                          }
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Center(
+                                    child: Text(
+                                      pairingStatus,
+                                      style: TextStyle(
+                                          color:
+                                              pairingStatus == 'Device Paired'
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                  if (pairingStatus == 'Disconnected')
+                                    Center(
+                                      child: TextButton(
+                                        onPressed: () {},
+                                        child: const Text(
+                                          "Couldn't connect?",
+                                          style: TextStyle(
+                                              color: Colors.deepPurple,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                      ),
+                                    )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 30),
+
+                        // Quick Controls
+                        Card(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: const [
+                                    Text('Quick Control',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16)),
+                                    Icon(Icons.settings,
+                                        color: Colors.deepPurple),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: const [
+                                    Icon(Icons.flash_on,
+                                        size: 40, color: Colors.orange),
+                                    Icon(Icons.local_fire_department,
+                                        size: 40, color: Colors.red),
+                                  ],
+                                ),
+                                const SizedBox(height: 24),
+                                const Text('Intensity'),
+                                Slider(
+                                  value: intensity,
+                                  min: 1,
+                                  max: 3,
+                                  divisions: 2,
+                                  label: intensity == 1
+                                      ? 'Low'
+                                      : intensity == 2
+                                          ? 'Medium'
+                                          : 'High',
+                                  activeColor: Colors.deepPurple,
+                                  inactiveColor: Colors.deepPurple.shade100,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      intensity = value;
+                                    });
+                                  },
+                                ),
+                                const SizedBox(height: 20),
+                                Center(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Navigate to TimerScreen when the button is pressed
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const TimerScreen()), // Navigating to TimerScreen
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.purple,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 40, vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                    ),
+                                    child: const Text("Start Session"),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.deepPurple,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bluetooth),
+            label: 'Pair',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Stats',
+          ),
+        ],
+      ),
     );
+  }
+
+  // Function to handle BottomNavigationBar tab change
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index; // Update the selected index
+    });
   }
 }
