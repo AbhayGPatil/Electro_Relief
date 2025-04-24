@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+//import 'package:flutter_blue/flutter_blue.dart';  // Import Flutter Blue for Bluetooth management
 import 'summary.dart'; // Import the SummaryScreen
 import 'qr_scan_screen.dart'; // Import QrScanScreen
-import 'timerscreen.dart';
+import 'timerscreen.dart'; // Import the TimerScreen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +20,10 @@ class _HomeScreenState extends State<HomeScreen>
   int _currentImageIndex = 0;
   final List<String> _images = [
     'assets/pain.jpg',
-    'assets/color_1.jpg', // Replace with other images later
+    'assets/color_1.jpg',
+    'assets/1.png',
+    'assets/2.png', 'assets/3.png', 'assets/four.png'
+    // Replace with other images later
   ];
 
   late final AnimationController _animationController;
@@ -44,15 +48,10 @@ class _HomeScreenState extends State<HomeScreen>
       duration: const Duration(milliseconds: 600),
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 1.0),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero).animate(
+            CurvedAnimation(
+                parent: _animationController, curve: Curves.easeOut));
 
     _animationController.forward();
 
@@ -72,6 +71,48 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   // Function to handle BottomNavigationBar tab change
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index; // Update the selected index
+    });
+  }
+
+  // Check Bluetooth and Device Pairing status
+  Future<void> _checkBluetoothAndDevicePairing() async {
+    // 1. Check if Bluetooth is on (using Flutter Blue or similar Bluetooth package)
+    bool bluetoothIsOn = await _checkBluetoothStatus();
+
+    if (!bluetoothIsOn) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please turn on Bluetooth")),
+      );
+      return;
+    }
+
+    // 2. Check if the device is paired
+    if (isDeviceOn) {
+      setState(() {
+        pairingStatus = 'Device Paired'; // Assume device is paired by default
+      });
+      // Proceed to TimerScreen if Bluetooth is on and device is paired
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const TimerScreen()),
+      );
+    } else {
+      // If the device is not paired, prompt to pair
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please pair your device first")),
+      );
+    }
+  }
+
+  // Simulated method to check Bluetooth status (you can replace it with actual Flutter Blue logic)
+  Future<bool> _checkBluetoothStatus() async {
+    // In a real app, use FlutterBlue or similar package to check the Bluetooth status
+    // Return true if Bluetooth is turned on (simulating with true here)
+    return true; // Change this as per your actual logic
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -281,13 +322,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 Center(
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      // Navigate to TimerScreen when the button is pressed
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                const TimerScreen()), // Navigating to TimerScreen
-                                      );
+                                      _checkBluetoothAndDevicePairing(); // Check Bluetooth and Device Pairing
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.purple,
@@ -340,9 +375,4 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   // Function to handle BottomNavigationBar tab change
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // Update the selected index
-    });
-  }
 }

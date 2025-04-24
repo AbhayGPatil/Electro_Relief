@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:lottie/lottie.dart'; // Import for Lottie animation
+import 'package:lottie/lottie.dart';
 
 class TimerScreen extends StatefulWidget {
   const TimerScreen({super.key});
@@ -15,25 +15,21 @@ class _TimerScreenState extends State<TimerScreen> {
   late Timer _timer;
   bool _isTimerRunning = false;
   bool _isComplete = false;
-  String _selectedAnimation = ''; // Variable to store selected animation
+  String _selectedAnimation = '';
 
-  // Start the countdown timer
   void _startTimer(int minutes) {
-    if (_isTimerRunning)
-      return; // Prevent starting the timer if it's already running
+    if (_isTimerRunning) return;
 
     setState(() {
       _isTimerRunning = true;
       _minutes = minutes;
       _seconds = 0;
-      _isComplete = false; // Reset completion status
+      _isComplete = false;
     });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_seconds > 0) {
-        setState(() {
-          _seconds--;
-        });
+        setState(() => _seconds--);
       } else if (_minutes > 0) {
         setState(() {
           _minutes--;
@@ -43,26 +39,21 @@ class _TimerScreenState extends State<TimerScreen> {
         _timer.cancel();
         setState(() {
           _isTimerRunning = false;
-          _isComplete =
-              true; // Mark the session as complete when the timer ends
+          _isComplete = true;
         });
       }
     });
   }
 
-  // Stop the timer
   void _stopTimer() {
     _timer.cancel();
     setState(() {
       _isTimerRunning = false;
-      _isComplete =
-          true; // Mark the session as complete when the timer is stopped manually
+      _isComplete = true;
     });
   }
 
-  // Complete the session when clicked
   void _completeSession() {
-    // Show the dialog box with the message
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -72,8 +63,8 @@ class _TimerScreenState extends State<TimerScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                Navigator.pop(context); // Navigate to HomeScreen
+                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
               child: const Text('OK'),
             ),
@@ -83,13 +74,6 @@ class _TimerScreenState extends State<TimerScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  // Select animation based on the timer selection
   void _selectAnimation(String animation) {
     setState(() {
       _selectedAnimation = animation;
@@ -97,109 +81,89 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F3FA),
       appBar: AppBar(
-        title: const Text('Lets Start'),
+        title: const Text('Let’s Start'),
         backgroundColor: Colors.purple,
+        elevation: 0,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Select a Timer Duration',
+                'Select Session Duration',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.purple,
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 24),
 
-              // Timer selection buttons
+              // Timer selection inside card
               Card(
-                elevation: 4,
+                elevation: 6,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
+                color: Colors.white,
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          _selectAnimation(
-                              'infinity-loop'); // Select infinity-loop animation
-                          _startTimer(15); // Start 15 minutes timer
-                        },
-                        child: const Text('15 Min'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 16),
-                          backgroundColor: Colors.purple,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          _selectAnimation(
-                              'load.json'); // Select progress-bar animation
-                          _startTimer(20); // Start 20 minutes timer
-                        },
-                        child: const Text('20 Min'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 16),
-                          backgroundColor: Colors.purple,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
+                      _buildTimeButton('15 min', () {
+                        _selectAnimation('infinity-loop');
+                        _startTimer(15);
+                      }),
+                      _buildTimeButton('20 min', () {
+                        _selectAnimation('progress-bar');
+                        _startTimer(20);
+                      }),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 30),
 
-              // Timer Display in a Card
+              // Timer + Animation Card
               Card(
-                elevation: 4,
+                elevation: 6,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                      const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
                   child: Column(
                     children: [
                       Text(
                         '$_minutes:${_seconds.toString().padLeft(2, '0')}',
                         style: const TextStyle(
-                          fontSize: 50,
+                          fontSize: 48,
                           fontWeight: FontWeight.bold,
                           color: Colors.purple,
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      // Display selected animation (if available)
+                      const SizedBox(height: 24),
                       if (_selectedAnimation.isNotEmpty)
                         Lottie.asset(
                           'assets/$_selectedAnimation.json',
-                          width: 100, // Adjust size if needed
-                          height: 400, // Adjust size if needed
-                          fit: BoxFit.cover,
+                          width: 180,
+                          height: 180,
                         ),
-                      const SizedBox(height: 20),
-                      // Stop Button
+                      const SizedBox(height: 24),
                       if (_isTimerRunning)
                         ElevatedButton(
                           onPressed: _stopTimer,
@@ -213,8 +177,6 @@ class _TimerScreenState extends State<TimerScreen> {
                             ),
                           ),
                         ),
-                      const SizedBox(height: 20),
-                      // Complete Button
                       if (_isComplete)
                         ElevatedButton(
                           onPressed: _completeSession,
@@ -233,6 +195,36 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeButton(String label, VoidCallback onPressed) {
+    return Material(
+      elevation: 6,
+      shape: const CircleBorder(),
+      shadowColor: Colors.black45,
+      color: Colors.white,
+      child: InkWell(
+        onTap: onPressed,
+        customBorder: const CircleBorder(),
+        child: Container(
+          height: 80,
+          width: 80,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white,
+          ),
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ),
       ),
